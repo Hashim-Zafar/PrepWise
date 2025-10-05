@@ -71,7 +71,6 @@ function Agent({ userName, userId, type }: AgentProps) {
   //Handle the call
   const handleCall = async () => {
     SetCallStatus(CallStatus.CONNECTING); // set the call status to connecting
-    console.log(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID);
     //start the call by giving it our workflow id
     await vapi.start(
       undefined, // assistant
