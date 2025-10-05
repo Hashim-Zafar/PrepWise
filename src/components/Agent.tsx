@@ -3,7 +3,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { vapi } from "@/lib/vapi.sdk";
+import Vapi from "@vapi-ai/web";
+
+const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_WEB_TOKEN!);
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -71,12 +73,18 @@ function Agent({ userName, userId, type }: AgentProps) {
     SetCallStatus(CallStatus.CONNECTING); // set the call status to connecting
 
     //start the call by giving it our workflow id
-    await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
-      variableValues: {
-        username: userName,
-        userid: userId,
-      },
-    });
+    await vapi.start(
+      undefined, // assistant
+      undefined, // assistantOverrides
+      undefined, // squad
+      process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, // workflow
+      {
+        variableValues: {
+          username: userName,
+          userid: userId,
+        },
+      } // workflowOverrides
+    );
   };
 
   //Disocnnect call
