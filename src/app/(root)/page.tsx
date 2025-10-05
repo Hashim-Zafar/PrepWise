@@ -13,7 +13,7 @@ function Page() {
             Practice real interview questions & get instant feedback
           </p>
           <Button asChild className="btn-primary max-sm:w-full">
-            <Link href="/">Get Started</Link>
+            <Link href="/Interview">Get Started</Link>
           </Button>
         </div>
         <Image
