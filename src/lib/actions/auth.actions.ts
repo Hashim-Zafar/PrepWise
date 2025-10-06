@@ -100,3 +100,38 @@ export const isAuthenticated = async () => {
   const user = await getCurrentUser();
   return !!user;
 };
+
+export const fetchUserInterviews = async (
+  userId: string
+): Promise<Interview[] | null> => {
+  const interviews = await db
+    .collection("Interviews")
+    .where("userId", "==", userId)
+    .orderBy("createdAt", "desc")
+    .get();
+
+  return interviews.docs.map((interview) => ({
+    id: interview.id,
+    ...interview.data(),
+  })) as Interview[];
+};
+
+export const fetchOtherInterviews = async (
+  params: GetLatestInterviewsParams
+) => {
+  const { userId, limit = 20 } = params;
+
+  const interviews = await db
+    .collection("Interviews")
+    .where("finalized", "==", true)
+    .where("userId", "!=", userId)
+    .orderBy("userId")
+    .orderBy("createdAt", "desc")
+    .limit(limit)
+    .get();
+
+  return interviews.docs.map((interview) => ({
+    id: interview.id,
+    ...interview.data(),
+  })) as Interview[];
+};

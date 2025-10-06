@@ -2,7 +2,6 @@ import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { getRandomInterviewCover } from "@/lib/utils";
 import { db } from "../../../../../firebase/admin";
-import { success } from "zod";
 
 export async function GET() {
   return Response.json({ success: true, data: "THANKYOU!" }, { status: 200 });
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
       role,
       type,
       level,
-      techstack: techstack.split(""),
+      techstack: techstack.split(","),
       questions: JSON.parse(questions),
       userId: userid,
       finalized: true,
