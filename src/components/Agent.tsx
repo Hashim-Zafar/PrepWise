@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Vapi from "@vapi-ai/web";
+import { interviewer } from "../../constants";
 
 const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_WEB_TOKEN!);
 
@@ -17,11 +18,13 @@ interface SavedMessage {
   role: "user" | "system" | "assistant";
   content: string;
 }
-function Agent({ userName, userId, type }: AgentProps) {
+function Agent({ Id, questions, userName, userId, type }: AgentProps) {
   const router = useRouter();
   const [isSpeaking, SetIsSpeaking] = useState(false);
   const [callStatus, SetCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, Setmessages] = useState<SavedMessage[]>([]);
+
+  const handleGenerateFeedback = (messages: SavedMessage[]) => {};
 
   useEffect(() => {
     //When call starts
@@ -65,25 +68,44 @@ function Agent({ userName, userId, type }: AgentProps) {
   }, []);
 
   useEffect(() => {
-    if (callStatus === CallStatus.FINISHED) router.push("/");
+    if (callStatus === CallStatus.FINISHED) {
+      if (type === "generate") {
+        router.push("/");
+      } else {
+        handleGenerateFeedback(messages);
+      }
+    }
   }, [messages, callStatus, type, userId]);
 
   //Handle the call
   const handleCall = async () => {
-    SetCallStatus(CallStatus.CONNECTING); // set the call status to connecting
-    //start the call by giving it our workflow id
-    await vapi.start(
-      undefined, // assistant
-      undefined, // assistantOverrides
-      undefined, // squad
-      process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, // workflow
-      {
+    SetCallStatus(CallStatus.CONNECTING);
+    if (type == "generate") {
+      await vapi.start(
+        undefined, // assistant
+        undefined, // assistantOverrides
+        undefined, // squad
+        process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, // workflow
+        {
+          variableValues: {
+            username: userName,
+            userid: userId,
+          },
+        } // workflowOverrides
+      );
+    } else {
+      let formatedQuestions = "";
+      if (questions) {
+        formatedQuestions = questions
+          .map((question) => ` - ${question}`)
+          .join("\n");
+      }
+      await vapi.start(interviewer, undefined, undefined, undefined, {
         variableValues: {
-          username: userName,
-          userid: userId,
+          questions: formatedQuestions,
         },
-      } // workflowOverrides
-    );
+      });
+    }
   };
 
   //Disocnnect call
