@@ -123,7 +123,7 @@ function Agent({ interviewId, questions, userName, userId, type }: AgentProps) {
 
   //Disocnnect call
   const handleDisconnect = async () => {
-    if (type === "generate") {
+    if (type === "interview") {
       toast.success("Generating Feedback");
     } else {
       toast.success("Created the Interview for you");

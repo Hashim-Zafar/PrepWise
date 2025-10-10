@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
 import Link from "next/link";
 import Image from "next/image";
-
+import { getFeedbackById } from "@/lib/actions/general.actions";
 import { Button } from "./ui/button";
 import DisplayTechIcons from "./DisplayTechIcons";
 import { cn, getRandomInterviewCover } from "@/lib/utils";
+import { get } from "http";
 
 const InterviewCard = async ({
   id,
@@ -14,7 +15,8 @@ const InterviewCard = async ({
   techstack,
   createdAt,
 }: InterviewCardProps) => {
-  const feedback = null as Feedback | null;
+  const feedback =
+    userId && id ? await getFeedbackById({ interviewId: id, userId }) : null;
 
   const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
 
