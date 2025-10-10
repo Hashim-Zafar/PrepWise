@@ -40,7 +40,7 @@ async function Page({ params }: RouteParams) {
         userName={user?.name!}
         userId={user?.id}
         type="interview"
-        Id={interview.id}
+        interviewId={id}
         questions={interview.questions}
       />
     </>

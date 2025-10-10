@@ -1,5 +1,5 @@
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
-// import { z } from "zod";
+import { z } from "zod";
 
 export const mappings = {
   "react.js": "react",
@@ -154,39 +154,36 @@ End the conversation on a polite and positive note.
   },
 };
 
-// export const feedbackSchema = z.object({
-//   totalScore: z.number(),
-//   categoryScores: z.tuple([
-//     z.object({
-//       name: z.literal("Communication Skills"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//     z.object({
-//       name: z.literal("Technical Knowledge"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//     z.object({
-//       name: z.literal("Problem Solving"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//     z.object({
-//       name: z.literal("Cultural Fit"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//     z.object({
-//       name: z.literal("Confidence and Clarity"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//   ]),
-//   strengths: z.array(z.string()),
-//   areasForImprovement: z.array(z.string()),
-//   finalAssessment: z.string(),
-// });
+export const feedbackSchema = z.object({
+  totalScore: z.number().min(0).max(100),
+
+  categoryScores: z.array(
+    z.object({
+      name: z.enum([
+        "Communication Skills",
+        "Technical Knowledge",
+        "Problem Solving",
+        "Cultural Fit",
+        "Confidence and Clarity",
+      ]),
+      score: z.number().min(0).max(100),
+      comment: z.string().min(1),
+    })
+  ),
+
+  strengths: z
+    .array(z.string())
+    .min(1)
+    .describe("Key strengths the candidate demonstrated."),
+  areasForImprovement: z
+    .array(z.string())
+    .min(1)
+    .describe("Specific areas where the candidate can improve."),
+  finalAssessment: z
+    .string()
+    .min(1)
+    .describe("A final summary of the candidate's overall performance."),
+});
 
 export const interviewCovers = [
   "/adobe.png",

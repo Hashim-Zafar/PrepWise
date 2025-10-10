@@ -1,11 +1,12 @@
 "use client";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Vapi from "@vapi-ai/web";
 import { interviewer } from "../../constants";
-
+import { createFeedback } from "@/lib/actions/general.actions";
+import { toast } from "sonner";
 const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_WEB_TOKEN!);
 
 enum CallStatus {
@@ -18,13 +19,11 @@ interface SavedMessage {
   role: "user" | "system" | "assistant";
   content: string;
 }
-function Agent({ Id, questions, userName, userId, type }: AgentProps) {
+function Agent({ interviewId, questions, userName, userId, type }: AgentProps) {
   const router = useRouter();
   const [isSpeaking, SetIsSpeaking] = useState(false);
   const [callStatus, SetCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, Setmessages] = useState<SavedMessage[]>([]);
-
-  const handleGenerateFeedback = (messages: SavedMessage[]) => {};
 
   useEffect(() => {
     //When call starts
@@ -68,6 +67,20 @@ function Agent({ Id, questions, userName, userId, type }: AgentProps) {
   }, []);
 
   useEffect(() => {
+    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+      const { success, feedbackId } = await createFeedback({
+        interviewId: interviewId!,
+        userId: userId!,
+        transcript: messages,
+      });
+      if (success && feedbackId) {
+        router.push(`/Interview/${interviewId}/Feedback`);
+      } else {
+        console.log("Error generating feedback", success, feedbackId);
+        redirect(`/`);
+      }
+    };
+
     if (callStatus === CallStatus.FINISHED) {
       if (type === "generate") {
         router.push("/");
@@ -110,6 +123,7 @@ function Agent({ Id, questions, userName, userId, type }: AgentProps) {
 
   //Disocnnect call
   const handleDisconnect = async () => {
+    toast.success("Generating Feedback");
     SetCallStatus(CallStatus.FINISHED);
     vapi.stop();
   };
