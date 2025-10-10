@@ -123,7 +123,11 @@ function Agent({ interviewId, questions, userName, userId, type }: AgentProps) {
 
   //Disocnnect call
   const handleDisconnect = async () => {
-    toast.success("Generating Feedback");
+    if (type === "generate") {
+      toast.success("Generating Feedback");
+    } else {
+      toast.success("Created the Interview for you");
+    }
     SetCallStatus(CallStatus.FINISHED);
     vapi.stop();
   };
