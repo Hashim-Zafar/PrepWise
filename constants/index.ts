@@ -147,6 +147,7 @@ Inform them that the company will reach out soon with feedback.
 End the conversation on a polite and positive note.
 
 - Be sure to be professional and polite.
+- Be sure to only ask as many questions as provided in the {{questions}} list. for example if a user provides 5 questions, only ask those 5 questions and nothing more.and use those 5 questions to make the final assesment
 - Keep all your responses short and simple. Use official language, but be kind and welcoming.
 - This is a voice conversation, so keep your responses short, like in a real conversation. Don't ramble for too long.`,
       },
